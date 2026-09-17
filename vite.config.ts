@@ -11,8 +11,8 @@ import rehypeKatex from 'rehype-katex'
 import remarkMathDisplayDollars from './src/lib/remark-math-display-dollars.js'
 import blogIndex from './build/blogIndex';
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: '/ioai-community-contest/',
   server: {
     host: "::",
     port: 8080,
@@ -20,10 +20,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     blogIndex(),
     mdx({
-      remarkPlugins: [
-        remarkMath,
-        remarkMathDisplayDollars
-      ],
+      remarkPlugins: [remarkMath, remarkMathDisplayDollars],
       rehypePlugins: [
         rehypeSlug,
         [rehypeAutolinkHeadings, { behavior: 'wrap' }],
@@ -32,8 +29,7 @@ export default defineConfig(({ mode }) => ({
       ]
     }),
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
