@@ -1,318 +1,99 @@
-import { useMemo, useState } from 'react';
-import {
-  Search,
-  X,
-  Table,
-  MessageSquare,
-  Eye,
-  Volume2,
-  Brain,
-  Compass,
-  type LucideIcon,
-} from 'lucide-react';
+import { ArrowRight, BookOpen, Brain, Code2, Database, FlaskConical, GraduationCap, Lightbulb, Trophy } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
-import TaskCard from '@/components/TaskCard';
-import {
-  referenceSections,
-  referenceToTask,
-  totalTaskCount,
-  type SectionAccent,
-} from '@/data/referenceTasks';
-import type { PracticeStatus, LearnItem } from '@/data/types';
 
-const accentStyles: Record<
-  SectionAccent,
-  { bg: string; text: string; ring: string; soft: string; chip: string }
-> = {
-  blue: {
-    bg: 'bg-gradient-to-br from-blue-500 to-blue-600',
-    text: 'text-blue-600 dark:text-blue-300',
-    ring: 'group-hover:ring-blue-500/40',
-    soft: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800/40',
-    chip: 'bg-blue-50 text-blue-700 border-blue-200/70 dark:bg-blue-900/25 dark:text-blue-300 dark:border-blue-800/50',
-  },
-  teal: {
-    bg: 'bg-gradient-to-br from-teal-500 to-teal-600',
-    text: 'text-teal-600 dark:text-teal-300',
-    ring: 'group-hover:ring-teal-500/40',
-    soft: 'bg-teal-50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-800/40',
-    chip: 'bg-teal-50 text-teal-700 border-teal-200/70 dark:bg-teal-900/25 dark:text-teal-300 dark:border-teal-800/50',
-  },
-  orange: {
-    bg: 'bg-gradient-to-br from-orange-500 to-orange-600',
-    text: 'text-orange-600 dark:text-orange-300',
-    ring: 'group-hover:ring-orange-500/40',
-    soft: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800/40',
-    chip: 'bg-orange-50 text-orange-700 border-orange-200/70 dark:bg-orange-900/25 dark:text-orange-300 dark:border-orange-800/50',
-  },
-  pink: {
-    bg: 'bg-gradient-to-br from-pink-500 to-pink-600',
-    text: 'text-pink-600 dark:text-pink-300',
-    ring: 'group-hover:ring-pink-500/40',
-    soft: 'bg-pink-50 dark:bg-pink-900/20 border-pink-200 dark:border-pink-800/40',
-    chip: 'bg-pink-50 text-pink-700 border-pink-200/70 dark:bg-pink-900/25 dark:text-pink-300 dark:border-pink-800/50',
-  },
-  purple: {
-    bg: 'bg-gradient-to-br from-purple-500 to-purple-600',
-    text: 'text-purple-600 dark:text-purple-300',
-    ring: 'group-hover:ring-purple-500/40',
-    soft: 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800/40',
-    chip: 'bg-purple-50 text-purple-700 border-purple-200/70 dark:bg-purple-900/25 dark:text-purple-300 dark:border-purple-800/50',
-  },
-};
+const stages = [
+  { id: 'python', number: '01', level: 'Beginner', title: 'Python', description: 'Learn enough Python to read, write, debug, and modify AI code.', icon: Code2, color: 'bg-blue-500', links: [{ label: 'Python guide', href: 'https://docs.python.org/3/tutorial/' }] },
+  { id: 'data', number: '02', level: 'Beginner', title: 'Data & Tools', description: 'Work with arrays, tables, plots, notebooks, files, and messy real-world data.', icon: Database, color: 'bg-teal-500', links: [{ label: 'NumPy', href: 'https://numpy.org/learn/' }, { label: 'Pandas', href: 'https://pandas.pydata.org/docs/getting_started/index.html' }] },
+  { id: 'math', number: '03', level: 'Beginner → Intermediate', title: 'Mathematics', description: 'Build the probability, statistics, linear algebra, calculus, and optimization intuition used in ML.', icon: FlaskConical, color: 'bg-orange-500', links: [{ label: '3Blue1Brown', href: 'https://www.3blue1brown.com/topics/linear-algebra' }] },
+  { id: 'machine-learning', number: '04', level: 'Intermediate', title: 'Machine Learning', description: 'Learn regression, classification, clustering, features, metrics, validation, and overfitting.', icon: Brain, color: 'bg-purple-500', links: [{ label: 'ML Foundations', href: '/resources/syllabus/foundations-of-ml' }] },
+  { id: 'deep-learning', number: '05', level: 'Intermediate', title: 'Deep Learning', description: 'Understand tensors, neural networks, backpropagation, CNNs, sequence models, and transformers.', icon: Brain, color: 'bg-pink-500', links: [{ label: 'Deep Learning', href: '/resources/syllabus/deep-learning' }, { label: 'PyTorch', href: '/resources/general/pytorch-and-frameworks' }] },
+  { id: 'domains', number: '06', level: 'Intermediate → Advanced', title: 'AI Domains', description: 'Apply your foundation to computer vision, NLP, and audio instead of treating them as separate worlds.', icon: Lightbulb, color: 'bg-indigo-500', links: [{ label: 'Computer Vision', href: '/resources/syllabus/computer-vision' }, { label: 'NLP', href: '/resources/syllabus/natural-language-processing' }, { label: 'Audio', href: '/resources/syllabus/audio-processing' }] },
+  { id: 'advanced', number: '07', level: 'Advanced', title: 'Advanced AI', description: 'Explore generative models, multimodal systems, reinforcement learning, robustness, and modern architectures.', icon: GraduationCap, color: 'bg-red-500', links: [{ label: 'Advanced topics', href: '/resources/syllabus/advanced-topics' }] },
+  { id: 'ioai-preparation', number: '08', level: 'IOAI', title: 'IOAI Preparation', description: 'Turn knowledge into competition skill: read unfamiliar tasks, build baselines, validate, experiment, and work under constraints.', icon: Trophy, color: 'bg-yellow-500', links: [{ label: 'Task strategy', href: '/resources/general/how-to-approach-a-task' }, { label: 'Validation', href: '/resources/general/local-validation-and-leaderboards' }, { label: 'AICC practice', href: 'https://aicc-official.org/roadmap' }] },
+];
 
-const sectionIcons: Record<string, LucideIcon> = {
-  'tabular-ml': Table,
-  nlp: MessageSquare,
-  cv: Eye,
-  audio: Volume2,
-  'deep-learning': Brain,
-};
-
-type TopicGroup = { topic: string; count: number };
-
-const getTopicGroups = (tasks: readonly { learn: readonly LearnItem[] }[]): TopicGroup[] => {
-  const counts = new Map<string, number>();
-  for (const task of tasks) {
-    for (const item of task.learn) {
-      counts.set(item.topic, (counts.get(item.topic) ?? 0) + 1);
-    }
-  }
-  return Array.from(counts.entries())
-    .map(([topic, count]) => ({ topic, count }))
-    .sort((a, b) => b.count - a.count || a.topic.localeCompare(b.topic));
-};
-
-const Roadmap = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTopics, setSelectedTopics] = useState<Record<string, string | null>>(
-    {},
-  );
-
-  const handleTopicClick = (sectionId: string, topic: string) => {
-    setSelectedTopics((prev) => ({
-      ...prev,
-      [sectionId]: prev[sectionId] === topic ? null : topic,
-    }));
-  };
-
-  const visibleSections = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    return referenceSections.map((section) => {
-      const selectedTopic = selectedTopics[section.id] ?? null;
-      const tasks = section.tasks.filter((task) => {
-        if (selectedTopic && !task.learn.some((i) => i.topic === selectedTopic)) return false;
-        if (!q) return true;
-        const matchesTask = task.task.toLowerCase().includes(q);
-        const matchesCompetition = task.competition.toLowerCase().includes(q);
-        const matchesLearn = task.learn.some((t) =>
-          t.topic.toLowerCase().includes(q),
-        );
-        return matchesTask || matchesCompetition || matchesLearn;
-      });
-      return { section, tasks };
-    });
-  }, [searchQuery, selectedTopics]);
-
-  const totalVisible = visibleSections.reduce(
-    (sum, { tasks }) => sum + tasks.length,
-    0,
-  );
-
-  return (
-    <div className="min-h-screen py-14 bg-gray-50 dark:bg-[#0a0a0f]">
-      <Navigation />
-
-      <div className="bg-white dark:bg-[#0a0a0f] border-b border-gray-200 dark:border-white/10 pt-4">
-        <div className="max-w-7xl mx-auto px-4 pt-4 pb-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-3">
-            <span className="text-gray-900 dark:text-white">Learning </span>
-            <span className="text-gradient">Roadmap</span>
-          </h1>
-          <p className="text-md text-gray-600 dark:text-gray-300 font-light mb-1">
-            A straight forward way to approach the IOAI syllabus: learn by doing{' '}
-            <span className="font-medium text-gray-900 dark:text-white">
-              {totalTaskCount} tasks
-            </span>{' '}
-            across {referenceSections.length} tracks, ordered roughly easy to hard. Take
-            it as a path to learn the topics that show up most often. Our usual contest rounds tend to have harder difficulty, more common for IOAI's level.
-          </p>
-
-
-        </div>
-      </div>
-
-      <div className="sticky top-16 z-30 bg-white dark:bg-[#0a0a0f] border-b border-gray-200 dark:border-white/10">
-        <div className="max-w-7xl mx-auto px-4 pt-4 pb-1 space-y-1">
-          <div className="max-w-7xl mx-auto">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Search tasks, competitions, topics…"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-10 pl-10 pr-10 rounded-lg bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-aicc-purple/50 focus:border-aicc-purple/50 transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
-                  aria-label="Clear search"
-                >
-                  <X className="w-3.5 h-3.5 text-gray-400" />
-                </button>
-              )}
-            </div>
-
-            {searchQuery && (
-              <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-                Showing {totalVisible} of {totalTaskCount} tasks
-              </p>
-            )}
+const Roadmap = () => (
+  <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0f]">
+    <Navigation />
+    <main className="pt-16">
+      <header className="bg-white dark:bg-[#0a0a0f] border-b border-gray-200 dark:border-white/10">
+        <div className="max-w-5xl mx-auto px-4 py-12 md:py-16">
+          <p className="text-sm font-semibold text-aicc-purple dark:text-aicc-purple-light mb-3">IOAI COMMUNITY • LEARNING</p>
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white">IOAI Learning Roadmap</h1>
+          <p className="mt-4 max-w-3xl text-lg text-gray-600 dark:text-gray-300">A simple path from your first Python program to solving unfamiliar IOAI-style AI problems.</p>
+          <div className="mt-6 flex flex-wrap gap-3 text-sm text-gray-600 dark:text-gray-300">
+            <span className="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-white/5">Beginner friendly</span>
+            <span className="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-white/5">Free-first resources</span>
+            <span className="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-white/5">Learn → code → experiment</span>
           </div>
-          <div className="flex items-center gap-1 overflow-x-auto py-2 -mx-1 px-1">
+        </div>
+      </header>
 
+      <div className="max-w-5xl mx-auto px-4 py-10 md:py-14">
+        <div className="mb-8 rounded-xl border border-aicc-purple/20 bg-aicc-purple/5 p-5">
+          <div className="flex gap-3">
+            <BookOpen className="w-5 h-5 text-aicc-purple shrink-0 mt-0.5" />
+            <div>
+              <h2 className="font-bold text-gray-900 dark:text-white">How to use this</h2>
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">You do not need to finish every topic before practicing. Learn the core idea, write some code, try a small problem, then move forward. Already know a stage? Skip it.</p>
+            </div>
+          </div>
+        </div>
 
-            {referenceSections.map((section) => {
-              const Icon = sectionIcons[section.id];
-              const styles = accentStyles[section.accent];
+        <div className="relative">
+          <div className="absolute left-5 top-5 bottom-5 w-px bg-gray-200 dark:bg-white/10 hidden sm:block" />
+          <div className="space-y-5">
+            {stages.map((stage) => {
+              const Icon = stage.icon;
               return (
-                <a
-                  key={section.id}
-                  href={`#${section.id}`}
-                  className="shrink-0 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-aicc-purple hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="whitespace-nowrap">{section.title}</span>
-                  <span
-                    className={`text-[11px] font-semibold px-1.5 py-0.5 rounded ${styles.chip}`}
-                  >
-                    {section.tasks.length}
-                  </span>
-                </a>
+                <article key={stage.id} className="relative sm:pl-14">
+                  <div className={`hidden sm:flex absolute left-0 top-5 w-10 h-10 ${stage.color} rounded-full items-center justify-center text-white shadow-sm`}>
+                    <span className="text-xs font-bold">{stage.number}</span>
+                  </div>
+                  <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-5 md:p-6 hover:border-aicc-purple/30 transition-colors">
+                    <div className="flex gap-4">
+                      <div className="sm:hidden shrink-0 w-10 h-10 rounded-lg bg-aicc-purple/10 flex items-center justify-center"><Icon className="w-5 h-5 text-aicc-purple" /></div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-xs font-bold text-gray-400 dark:text-gray-500">{stage.number}</span>
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300">{stage.level}</span>
+                        </div>
+                        <h2 className="mt-1 text-xl md:text-2xl font-bold text-gray-900 dark:text-white">{stage.title}</h2>
+                        <p className="mt-1.5 text-sm text-gray-600 dark:text-gray-300">{stage.description}</p>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {stage.links.map((link) => link.href.startsWith('/') ? (
+                            <Link key={link.href} to={link.href} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-white/10 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-aicc-purple dark:hover:text-aicc-purple-light transition-colors">{link.label}<ArrowRight className="w-3.5 h-3.5" /></Link>
+                          ) : (
+                            <a key={link.href} href={link.href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-white/10 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-aicc-purple dark:hover:text-aicc-purple-light transition-colors">{link.label}<ArrowRight className="w-3.5 h-3.5" /></a>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
               );
             })}
           </div>
         </div>
+
+        <div className="mt-10 grid md:grid-cols-2 gap-4">
+          <Link to="/resources" className="group bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-5 hover:border-aicc-purple/40 transition-colors">
+            <h3 className="font-bold text-gray-900 dark:text-white">Browse all resources</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Use the full resource library when you want alternatives or deeper material.</p>
+            <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-aicc-purple">Open resources <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></span>
+          </Link>
+          <Link to="/resources/syllabus/foundations-of-ml" className="group bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-5 hover:border-aicc-purple/40 transition-colors">
+            <h3 className="font-bold text-gray-900 dark:text-white">Explore the IOAI syllabus</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">The roadmap tells you what to learn next; the syllabus shows what each area contains.</p>
+            <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-aicc-purple">Open syllabus <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></span>
+          </Link>
+        </div>
       </div>
-
-      <div className="max-w-7xl mx-auto px-4 pt-6 pb-4 space-y-16">
-        {visibleSections.map(({ section, tasks }) => {
-          const Icon = sectionIcons[section.id];
-          const styles = accentStyles[section.accent];
-          const selectedTopic = selectedTopics[section.id] ?? null;
-          const topicGroups = getTopicGroups(section.tasks);
-
-          return (
-            <section
-              key={section.id}
-              id={section.id}
-              className="scroll-mt-32"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div
-                  className={`shrink-0 w-10 h-10 ${styles.bg} flex items-center justify-center`}
-                >
-                  <Icon className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="flex-1 min-w-0 text-2xl font-bold text-gray-900 dark:text-white">
-                  {section.title}
-                </h2>
-                <p className="shrink-0 text-xs text-gray-500 dark:text-gray-400">
-                  {tasks.length}
-                  {tasks.length !== section.tasks.length && (
-                    <span className="text-gray-400 dark:text-gray-500">
-                      {' '}
-                      of {section.tasks.length}
-                    </span>
-                  )}{' '}
-                  {section.tasks.length === 1 ? 'task' : 'tasks'}
-                </p>
-              </div>
-
-              {section.description && (
-                <p className="text-sm text-gray-600 dark:text-gray-300 font-light mb-5">
-                  {section.description}
-                </p>
-              )}
-
-              {topicGroups.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mb-6">
-                  {topicGroups.map((g) => {
-                    const isSelected = selectedTopic === g.topic;
-                    return (
-                      <button
-                        key={g.topic}
-                        onClick={() => handleTopicClick(section.id, g.topic)}
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium border rounded-full transition-colors ${isSelected
-                          ? 'bg-aicc-purple text-white border-aicc-purple'
-                          : 'bg-white dark:bg-white/5 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-white/10 hover:border-aicc-purple/50 hover:text-aicc-purple'
-                          }`}
-                      >
-                        {g.topic}
-                        <span
-                          className={`text-[10px] tabular-nums ${isSelected ? 'text-white/80' : 'text-gray-400'
-                            }`}
-                        >
-                          {g.count}
-                        </span>
-                      </button>
-                    );
-                  })}
-                  {selectedTopic && (
-                    <button
-                      onClick={() => handleTopicClick(section.id, selectedTopic)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-aicc-purple transition-colors"
-                    >
-                      <X className="w-3 h-3" />
-                      Clear
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {tasks.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {tasks.map((task) => {
-                    return (
-                      <TaskCard
-                        key={task.id}
-                        task={referenceToTask(task, section, task.difficulty)}
-                        mode="reference"
-                        iconType={section.id}
-                        learnItems={task.learn}
-                      />
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-10 px-4 border border-dashed border-gray-200 dark:border-white/10 rounded-lg">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    No tasks match the current filters.
-                  </p>
-                  {(selectedTopic || searchQuery) && (
-                    <button
-                      onClick={() => {
-                        handleTopicClick(section.id, selectedTopic || '');
-                        setSearchQuery('');
-                      }}
-                      className="mt-2 text-xs font-medium text-aicc-purple dark:text-aicc-purple-light hover:underline"
-                    >
-                      Clear filters
-                    </button>
-                  )}
-                </div>
-              )}
-            </section>
-          );
-        })}
-      </div>
-
-      <Footer />
-    </div>
-  );
-};
+    </main>
+    <Footer />
+  </div>
+);
 
 export default Roadmap;
