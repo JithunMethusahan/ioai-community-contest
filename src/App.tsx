@@ -16,6 +16,7 @@ import Resources from "./pages/Resources";
 import ResourceCategory from "./pages/ResourceCategory";
 import ResourceSyllabus from "./pages/ResourceSyllabus";
 import Roadmap from "./pages/Roadmap";
+import RoadmapTopic from "./pages/RoadmapTopic";
 import AdminLogin from "./pages/AdminLogin";
 import AdminLayout from "./components/AdminLayout";
 import AdminRoadmap from "./pages/AdminRoadmap";
@@ -68,6 +69,7 @@ const App = () => (
           <Route path="/resources/syllabus/:sectionId" element={<ResourceSyllabus />} />
           <Route path="/resources/syllabus/:sectionId/:subsectionId" element={<ResourceSyllabus />} />
           <Route path="/roadmap" element={<Roadmap />} />
+          <Route path="/roadmap/:stageId" element={<RoadmapTopic />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route element={<AdminLayout />}>
             <Route path="/admin/rounds" element={<AdminRounds />} />
@@ -76,11 +78,7 @@ const App = () => (
             <Route path="/admin/tasks" element={<AdminTasks />} />
             <Route path="/admin/blogs" element={<Suspense fallback={<p className="p-12">Loading editor…</p>}><AdminBlogs /></Suspense>} />
           </Route>
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
-
-
-          {/*<Route path="/community" element={<Community />} />*/}
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
