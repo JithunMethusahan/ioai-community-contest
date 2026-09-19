@@ -1,27 +1,43 @@
-# Contributing
+# Contributing Resources
 
-Thanks for helping improve the IOAI Community resources.
+You can contribute without changing any code.
 
-## Add a resource
+## How to submit
 
-1. Fork the repository.
-2. Use `RESOURCE_TEMPLATE.md` to prepare the submission.
-3. Add or update the appropriate resource entry.
-4. Check that the link works and the information is accurate.
-5. Open a pull request with a short explanation of what you added and why.
+1. Go to **Issues** → **New issue**.
+2. Choose **Suggest a Resource**.
+3. Copy/fill the template.
+4. Add the resource link and simple details.
+5. Submit the issue.
 
-## What we want
+## What to submit
 
-We are looking for resources that help a student move from beginner to advanced AI understanding. Strong explanations, useful notebooks, high-quality courses, videos, theory references, and IOAI-relevant material are welcome.
+Please submit resources that are:
+- **Free to access**
+- Related to AI learning or IOAI preparation
+- Relevant to the exact topic you select
+- Actually useful for students
 
-## Keep the roadmap small
+### Topic examples
 
-Do not add every resource you find to the main learning path. The roadmap is the recommended sequence. Extra alternatives belong in the broader resource collection when they add real value.
+Be specific when possible:
 
-## Review
+- Foundations of ML → Supervised Learning
+- Deep Learning → Transformers
+- NLP → Language Models
+- NLP → Prompting & Inference
+- Computer Vision → Object Detection
+- Audio → Speech Recognition
+- Advanced Topics → Reinforcement Learning
 
-Contributors and maintainers may test links, edit descriptions, change placement, or decline a resource if it duplicates something better already available.
+You do not need to decide whether the resource belongs in the final collection. The maintainer will review every submission.
 
-## Code and site changes
+## Simple rules
 
-For UI or code changes, keep pull requests focused and explain the user problem the change solves.
+- Free resources only.
+- No duplicate submissions when you can see the same resource already listed.
+- Please use the correct topic and give a short, honest description.
+
+## Need help?
+
+If you are unsure about anything, open an issue and ask.

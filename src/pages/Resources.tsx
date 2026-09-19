@@ -1,56 +1,27 @@
-import { ArrowRight, BookOpen, Map, Sparkles, Star } from 'lucide-react';
+import { ArrowRight, BookOpen, Github, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import ResourceLayout from '@/components/resources/ResourceLayout';
 import ResourceHero from '@/components/resources/ResourceHero';
 import ResourceCategoryNav from '@/components/resources/ResourceCategoryNav';
 import ResourceCard from '@/components/resources/ResourceCard';
 import { getFeaturedResources } from '@/data/resources';
 
-const Resources = () => {
-  const featuredResources = getFeaturedResources().slice(0, 6);
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0a0f]">
-      <Navigation />
-      <ResourceHero
-        title="Learn"
-        titleAccent="AI"
-        subtitle="Start with the roadmap, then use the syllabus and curated resources when you need more depth."
-        className="pt-16"
-      />
-
-      <main className="max-w-7xl mx-auto px-4 py-8 pb-24">
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-12">
-          <Link to="/roadmap" className="group rounded-xl bg-gradient-to-br from-aicc-purple to-aicc-violet text-white p-6 hover:brightness-110 transition-all">
-            <div className="flex items-start justify-between gap-4">
-              <div><div className="w-11 h-11 rounded-lg bg-white/15 flex items-center justify-center mb-5"><Map className="w-5 h-5" /></div><h2 className="text-2xl font-bold">Start with the Roadmap</h2><p className="mt-2 text-sm text-white/75 max-w-md">Python → data → math → ML → deep learning → domains → advanced AI → IOAI preparation.</p></div>
-              <ArrowRight className="w-5 h-5 mt-1 opacity-70 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
-          <div className="rounded-xl bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6">
-            <div className="w-11 h-11 rounded-lg bg-aicc-purple/10 flex items-center justify-center mb-5"><BookOpen className="w-5 h-5 text-aicc-purple" /></div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Then explore topics</h2>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">The syllabus is the reference map. Each section has explanations, subsections, and curated links.</p>
-          </div>
-        </section>
-
-        <ResourceCategoryNav />
-
-        {featuredResources.length > 0 && (
-          <section className="mt-16">
-            <div className="flex items-center gap-3 mb-5"><Star className="w-5 h-5 text-aicc-orange" /><h2 className="text-2xl font-bold text-gray-900 dark:text-white">Featured Resources</h2></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{featuredResources.map((resource) => <ResourceCard key={resource.id} resource={resource} />)}</div>
-          </section>
-        )}
-
-        <section className="mt-16 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-6 md:p-8">
-          <div className="flex items-start gap-4"><Sparkles className="w-5 h-5 text-aicc-purple mt-1 shrink-0" /><div><h2 className="text-xl font-bold text-gray-900 dark:text-white">Community-curated</h2><p className="mt-1 text-sm text-gray-600 dark:text-gray-300">Have a resource that is genuinely useful? Check the contribution guidelines and submit it through GitHub. The core roadmap stays intentionally small; good alternatives can live in the wider collection.</p><a href="https://github.com/JithunMethusahan/ioai-community-contest/blob/main/CONTRIBUTING.md" target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-aicc-purple dark:text-aicc-purple-light hover:underline">Contribute a resource <ArrowRight className="w-4 h-4" /></a></div></div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
-};
-
-export default Resources;
+export default function Resources() {
+  const featured = getFeaturedResources().slice(0, 6);
+  return <ResourceLayout>
+    <ResourceHero title="AI" titleAccent="Resources" subtitle="A curated collection of free resources for learning AI and preparing for AI competitions." />
+    <main className="mx-auto max-w-7xl px-4 py-10 pb-20">
+      <section className="mb-10 rounded-xl border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-white/5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex gap-3"><BookOpen className="mt-1 h-5 w-5 shrink-0 text-aicc-purple"/><div><h2 className="text-xl font-bold text-gray-900 dark:text-white">Learn by topic</h2><p className="mt-1 text-sm text-gray-600 dark:text-gray-300">Browse the general collection or follow the IOAI syllabus topic by topic.</p></div></div>
+          <a href="https://github.com/JithunMethusahan/ioai-community-contest/issues/new?template=resource.yml" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-lg bg-aicc-purple px-4 py-2 text-sm font-semibold text-white hover:opacity-90">Suggest a resource <ArrowRight className="h-4 w-4"/></a>
+        </div>
+      </section>
+      <ResourceCategoryNav />
+      {featured.length > 0 && <section className="mt-16"><div className="mb-5 flex items-center gap-3"><Star className="h-5 w-5 text-aicc-orange"/><h2 className="text-2xl font-bold text-gray-900 dark:text-white">Featured Resources</h2></div><div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">{featured.map(r => <ResourceCard key={r.id} resource={r}/>)}</div></section>}
+      <section className="mt-16 rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">
+        <Github className="mb-2 h-5 w-5 text-aicc-purple"/><p>All resources should be free to access. Every submission is reviewed before it is added to the curated collection.</p>
+      </section>
+    </main>
+  </ResourceLayout>;
+}
