@@ -6,6 +6,7 @@ body:
     attributes:
       value: |
         Thanks! You do not need to write code. Fill in the fields below.
+
   - type: input
     id: resource
     attributes:
@@ -14,20 +15,16 @@ body:
       placeholder: e.g. The Illustrated Transformer
     validations:
       required: true
+
   - type: input
     id: link
     attributes:
       label: Resource link
       description: Use the direct link to the free resource.
+      placeholder: https://...
     validations:
       required: true
-  - type: input
-    id: category
-    attributes:
-      label: Specific category
-      description: e.g. Foundations of ML → Supervised Learning, NLP → Language Models
-    validations:
-      required: true
+
   - type: textarea
     id: description
     attributes:
@@ -36,21 +33,27 @@ body:
       placeholder: 1–3 simple sentences.
     validations:
       required: true
+
+  - type: input
+    id: category
+    attributes:
+      label: Specific category (optional)
+      description: e.g. Foundations of ML → Supervised Learning, NLP → Language Models
+      placeholder: Leave blank if you are not sure.
+
   - type: textarea
     id: why
     attributes:
-      label: Why should we consider it?
+      label: Why should we consider it? (optional)
       description: Tell us what makes it useful.
       placeholder: A short reason is enough.
-    validations:
-      required: true
+
   - type: input
     id: level
     attributes:
-      label: Suggested level
+      label: Suggested level (optional)
       description: Beginner, Intermediate, or Advanced
-    validations:
-      required: true
+
   - type: markdown
     attributes:
       value: |
